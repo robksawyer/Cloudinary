@@ -36,7 +36,7 @@ Call the component in controller
 
 				public function index() {
 					// Assume you have already uploaded images to tmp locations
-					$this->Cloudinary($upload);
+					$this->Cloudinary->upload($file);
 				}
 			}			
 # Limitation
