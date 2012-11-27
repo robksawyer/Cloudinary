@@ -1,3 +1,6 @@
 [submodule "Vendor/Cloudinary/cloudinary_php"]
 	path = Vendor/Cloudinary/cloudinary_php
 	url = https://github.com/cloudinary/cloudinary_php.git
+[submodule "Vendor/cloudinary_php"]
+	path = Vendor/cloudinary_php
+	url = https://github.com/cloudinary/cloudinary_php.git
