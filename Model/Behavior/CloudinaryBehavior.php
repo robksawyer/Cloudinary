@@ -96,8 +96,8 @@ class CloudinaryBehavior extends ModelBehavior {
 		return $publicId;
 	}
 
-	public function getCloudImage($publicId, $options = array()) {
-		return $this->CakeCloudinary->getResource($publicId, $options);
+	public function getCloudImage($publicId) {
+		return $this->CakeCloudinary->getResource($publicId);
 	}
 
 	public function afterSave(Model $Model, $created = null) {

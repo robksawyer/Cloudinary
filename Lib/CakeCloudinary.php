@@ -108,10 +108,9 @@ class CakeCloudinary {
  * @param  string $type          [description]
  * @return [type]                [description]
  */
-	public function getResource($publicId = '', $options = array()) {
-		$options['public_id'] = $publicId;
+	public function getResource($publicId = '') {
 		$api = new \Cloudinary\Api();
-		return $api->resource($publicId);
+		$api->resource($publicId);
 	}
 
 /**
