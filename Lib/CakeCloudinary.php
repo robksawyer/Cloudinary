@@ -120,7 +120,7 @@ class CakeCloudinary {
 			throw new CakeException(__d('cake_dev', 'Public ID is missing'));
 		}
 	}
-
+	
 /**
  * Extract version and public_id based on secure_url
  * 
