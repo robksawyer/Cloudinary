@@ -8,7 +8,7 @@ class CloudinaryBehavior extends ModelBehavior {
 		'publicPattern' => array('slug', 'alias'),
 		'publicSeparator' => '-',
 		);
-
+	public $missingImageId = '404Image';
 /**
  * Initiate behaviour
  *
@@ -37,20 +37,10 @@ class CloudinaryBehavior extends ModelBehavior {
 		$cloudinaryLink = new CloudinaryLink;
 		$result = array();
 		$publicId = $this->buildPublicId($Model);
+		$cloudImage = $this->getCloudImage($publicId);
 
-		$link = $this->CakeCloudinary->upload($image_path, array('public_id' =>  $publicId));
-
-		$count = $cloudinaryLink->find('count', array(
-			'conditions' => array(
-				'ref_id' => $Model->id,
-				'public_id' => $publicId,
-			)
-		));
-		
-		if ($count < 1) {
-			$link['ref_id'] = $Model->id;
-			$link['ref_type'] = $Model->alias;
-			if ($cloudinaryLink->save($link)) {
+		if (!$cloudImage) {
+			if ($this->CakeCloudinary->upload($image_path, array('public_id' =>  $publicId))) {
 				$result = array('statusCode' => 200);
 			} else {
 				$result = array('statusCode' => -1);
@@ -68,19 +58,46 @@ class CloudinaryBehavior extends ModelBehavior {
 	 * @param  Model  $Model
 	 * @return string $publicId
 	 */
-	private function buildPublicId(Model $Model) {
+	private function buildPublicId($Model) {
+		if (is_object($Model)) {
+			return $this->getPublicIdFromModel($Model);
+		} else if (is_array($Model)) {
+			return $this->getPublicIdFromArray($Model);
+		}
+	}
+	/**
+	 * If we get an model object, build public id from it
+	 * @param  [type] $Model [description]
+	 * @return [type]        [description]
+	 */
+	private function getPublicIdFromArray($Model) {
+		$settings = $this->settings[$Model['alias']];
+		foreach ($settings['publicPattern'] as $fieldname) {
+			$publicParts[] = strtolower($Model[$fieldname]);
+		}
+		$publicId = implode($settings['publicSeparator'], $publicParts);
+		return $publicId;
+	}
+	/**
+	 * If we get an array (like from a result) use that for public id.
+	 * @param  [type] $Model [description]
+	 * @return [type]        [description]
+	 */
+	private function getPublicIdFromModel($Model) {
 		$settings = $this->settings[$Model->alias];
 		foreach ($settings['publicPattern'] as $fieldname) {
-
 			if ($Model->$fieldname) {
 				$publicParts[] = strtolower($Model->$fieldname);
 			} else if ($Model->field($fieldname)) {
 				$publicParts[] = strtolower($Model->field($fieldname));
 			}
 		}
-
 		$publicId = implode($settings['publicSeparator'], $publicParts);
 		return $publicId;
+	}
+
+	public function getCloudImage($publicId, $options = array()) {
+		return $this->CakeCloudinary->getResource($publicId, $options);
 	}
 
 	public function afterSave(Model $Model, $created = null) {
@@ -97,35 +114,37 @@ class CloudinaryBehavior extends ModelBehavior {
 	public function afterFind(Model $Model, $results = array(), $primary = false) {
 
 		if (!empty($results) and is_array($results) and count($results)) {
-			App::import('Model', 'Cloudinary.CloudinaryLink');
-			$cloudinaryLink = new CloudinaryLink;
 			$cloudinary = new Cloudinary;
 			foreach ($results as $i => $row) {
 				
 				foreach ($this->settings as $alias => $settings) {
 					if (!empty($row[$alias])) {
 						if (!empty($settings['thumbs']) and !empty($row[$alias]['id'])) {
-							$params = array(
-								'conditions' => array(
-										'ref_id' => $row[$alias]['id'],
-										'ref_type' => $alias
-									)
-								);
-							if ($linkedCloud = $cloudinaryLink->find('first', $params)) {
-								$cloud_name = $linkedCloud['CloudinaryLink']['name'];
+							
+							$buildModel = $row[$alias];
+							$buildModel['alias'] = $alias;
+							$publicId = $this->buildPublicId($buildModel);
+							$cloudResource = $this->getCloudImage($publicId);
 
-								foreach ($settings['thumbs'] as $style => $dims) {
-									$thumbname = $style . '_thumb_path';
-
-									$options = array(
-										"width" => $dims['w'],
-										"height" => $dims['h'],
-										"crop" => "fill");
-
-									$thumbpath = $cloudinary->cloudinary_url($cloud_name, $options);
-									$row[$alias][$thumbname] = $thumbpath;
-								}
+							if (!$cloudResource['url']) {
+								$cloudResource = $this->getCloudImage($this->missingImageId);
 							}
+
+							$cloudImage = explode('/', $cloudResource['url']);
+							$cloudImage = $cloudImage[count($cloudImage)-1];
+
+							foreach ($settings['thumbs'] as $style => $dims) {
+								$thumbname = $style . '_thumb_path';
+
+								$options = array(
+									"width" => $dims['w'],
+									"height" => $dims['h'],
+									"crop" => "fill");
+
+								$thumbpath = $cloudinary->cloudinary_url($cloudImage, $options);
+								$row[$alias][$thumbname] = $thumbpath;
+							}
+
 						}
 
 					}
