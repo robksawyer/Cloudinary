@@ -109,8 +109,16 @@ class CakeCloudinary {
  * @return [type]                [description]
  */
 	public function getResource($publicId = '') {
-		$api = new \Cloudinary\Api();
-		$api->resource($publicId);
+		$return = false;
+		if (!empty($publicId) and trim($publicId)) {
+			 try {
+				$api = new \Cloudinary\Api();
+				$return = $api->resource($publicId);
+			 } catch (Exception $e) {
+			 	// fail!
+			 }
+		}
+		return $return;
 	}
 
 /**

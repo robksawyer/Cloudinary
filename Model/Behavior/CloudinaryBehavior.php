@@ -52,7 +52,7 @@ class CloudinaryBehavior extends ModelBehavior {
 		return $result;
 	}
 
-/**
+  /**
 	 * Build the publicId for this image/model
 	 * 
 	 * @param  Model  $Model
@@ -65,6 +65,7 @@ class CloudinaryBehavior extends ModelBehavior {
 			return $this->getPublicIdFromArray($Model);
 		}
 	}
+
 	/**
 	 * If we get an model object, build public id from it
 	 * @param  [type] $Model [description]
@@ -73,7 +74,11 @@ class CloudinaryBehavior extends ModelBehavior {
 	private function getPublicIdFromArray($Model) {
 		$settings = $this->settings[$Model['alias']];
 		foreach ($settings['publicPattern'] as $fieldname) {
-			$publicParts[] = strtolower($Model[$fieldname]);
+			if (!empty($Model[$fieldname])) {
+				$publicParts[] = strtolower($Model[$fieldname]);
+			} else {
+				return false; // fail!
+			}
 		}
 		$publicId = implode($settings['publicSeparator'], $publicParts);
 		return $publicId;
@@ -124,6 +129,7 @@ class CloudinaryBehavior extends ModelBehavior {
 							$buildModel = $row[$alias];
 							$buildModel['alias'] = $alias;
 							$publicId = $this->buildPublicId($buildModel);
+
 							$cloudResource = $this->getCloudImage($publicId);
 
 							if (!$cloudResource['url']) {
