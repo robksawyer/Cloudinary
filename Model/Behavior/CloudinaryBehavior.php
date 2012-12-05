@@ -7,8 +7,10 @@ class CloudinaryBehavior extends ModelBehavior {
 	protected $_defaults = array(
 		'publicPattern' => array('slug', 'alias'),
 		'publicSeparator' => '-',
-		);
+	);
+
 	public $missingImageId = '404Image';
+
 /**
  * Initiate behaviour
  *
@@ -33,8 +35,6 @@ class CloudinaryBehavior extends ModelBehavior {
 			return array('statusCode' => -1);
 		}
 
-		App::import('Model', 'Cloudinary.CloudinaryLink');
-		$cloudinaryLink = new CloudinaryLink;
 		$result = array();
 		$publicId = $this->buildPublicId($Model);
 		$cloudImage = $this->getCloudImage($publicId);
@@ -131,14 +131,14 @@ class CloudinaryBehavior extends ModelBehavior {
 							$publicId = $this->buildPublicId($buildModel);
 
 							$cloudResource = $this->getCloudImage($publicId);
-
 							if (!$cloudResource['url']) {
 								$cloudResource = $this->getCloudImage($this->missingImageId);
 							}
 
-							$cloudImage = explode('/', $cloudResource['url']);
-							$cloudImage = $cloudImage[count($cloudImage)-1];
-
+							$cloudImage = array_filter(explode('/', $cloudResource['url']));
+							if (count($cloudImage) > 1) {
+								$cloudImage = $cloudImage[count($cloudImage)];
+							}
 							foreach ($settings['thumbs'] as $style => $dims) {
 								$thumbname = $style . '_thumb_path';
 
@@ -146,7 +146,6 @@ class CloudinaryBehavior extends ModelBehavior {
 									"width" => $dims['w'],
 									"height" => $dims['h'],
 									"crop" => "fill");
-
 								$thumbpath = $cloudinary->cloudinary_url($cloudImage, $options);
 								$row[$alias][$thumbname] = $thumbpath;
 							}

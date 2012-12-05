@@ -4,6 +4,8 @@
  */
 class CakeCloudinary {
 
+ public $cache_name = 'cloudinary';
+
 /**
  * Import the vendor files (Cloudinary PHP Classes)
  *
@@ -16,6 +18,13 @@ class CakeCloudinary {
 		Configure::load('cloudinary');
 		$config = Configure::read('Cloudinary');
 		$this->config = $config;
+
+		Cache::config('cloudinary', array(
+	    'engine' => 'File',
+	    'duration' => '+12 hours',
+	    'probability' => 100,
+	    'path' => CACHE . 'cloudinary' . DS,
+		));
 
 		$this->env = $this->getEnv();
 		$this->path = Configure::read('Cloudinary.path');
@@ -109,15 +118,25 @@ class CakeCloudinary {
  * @return [type]                [description]
  */
 	public function getResource($publicId = '') {
-		$return = false;
-		if (!empty($publicId) and trim($publicId)) {
-			 try {
-				$api = new \Cloudinary\Api();
-				$return = $api->resource($publicId);
-			 } catch (Exception $e) {
-			 	// fail!
-			 }
+
+		$return = false; // default lets fail
+		$cache_key = 'cloudinary.'.$publicId.'.apicache';
+		$exists = Cache::read($cache_key, $this->cache_name);
+
+		if (!$exists) {
+			if (!empty($publicId)) {
+				 try {
+					$api = new \Cloudinary\Api();
+					$return = $api->resource($publicId);
+					Cache::write($cache_key, $return, $this->cache_name);
+				 } catch (Exception $e) {
+				  	// fail!
+				 }
+			}
+		} else {
+			$return = $exists;
 		}
+
 		return $return;
 	}
 
