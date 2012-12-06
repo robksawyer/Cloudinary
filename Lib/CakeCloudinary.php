@@ -110,6 +110,15 @@ class CakeCloudinary {
 		}
 	}
 
+public function getCloudImage($publicId) {
+	$cloudResource = $this->getResource($publicId);
+	$cloudImage = array_filter(explode('/', $cloudResource['url']));
+	if (count($cloudImage) > 1) {
+		$cloudImage = $cloudImage[count($cloudImage)];
+	}
+	return $cloudImage;
+}
+
 /**
  * 
  * @param  string $publicId      [description]
