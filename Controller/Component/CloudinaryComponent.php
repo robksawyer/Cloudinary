@@ -4,22 +4,22 @@
  *  A component for Cloudinary images
  * 
  * @author Ryan Ye <ryanicle@gmail.com>
+ * @author Ken Garland <ken@ufn.com>
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+
+App::import('Vendor', 'Cloudinary.Cloudinary', array('file' => 'cloudinary_php/src/Cloudinary.php'));
+App::import('Vendor', 'Cloudinary.Uploader', array('file' => 'cloudinary_php/src/Uploader.php'));
+App::import('Vendor', 'Cloudinary.Api', array('file' => 'cloudinary_php/src/Api.php'));
 class CloudinaryComponent extends Component {
 /**
  * @var $env
  */ 
 	public $env = null;
 
-/**
- * @var $path
- */
-	public $path = null;
-	
+
 	public function __construct() {
 		$this->env = Configure::read('Cloudinary.env');
-		$this->path = Configure::read('Cloudinary.path');
 	}
 	
 	
@@ -31,14 +31,7 @@ class CloudinaryComponent extends Component {
  * @return void* 
  */
 	public function initialize(Controller $controller) {
-		// Calling Cloudinary library which is located in app/Vendor/Cloudinary
-		if (file_exists(APP . 'Vendor' . DS . 'Cloudinary')) {
-			include_once APP . 'Vendor' . DS . 'Cloudinary' . DS . 'Cloudinary.php';
-			include_once APP . 'Vendor' . DS . 'Cloudinary' . DS . 'Uploader.php';
-			include_once APP . 'Vendor' . DS . 'Cloudinary' . DS . 'Api.php';
-		} else {
-			throw new CakeException(__d('cake_dev', 'app/Vendor/Cloudinary is missing. Please download it from https://github.com/cloudinary/cloudinary_php'));
-		}
+		
 	}
 	
 /**
@@ -48,7 +41,10 @@ class CloudinaryComponent extends Component {
  * @return void
  */
 	public function startup(Controller $controller) {
-		$this->controller = $controller;
+		$this->Controller = $controller;
+		$this->Api = new \Cloudinary\Api(); // Vendor file use namespace so we load it differently.
+		$this->Uploader = new \Cloudinary\Uploader(); // Vendor files uses namespace so we load it differently.
+		$this->Cloudinary = new Cloudinary();
 		
 		if (empty($this->env)) {
 			throw new CakeException(__d('cake_dev', 'Cloudinary.env is missing. Please set Cloudinary.env in app/Config/bootstrap.php'));	
@@ -67,44 +63,6 @@ class CloudinaryComponent extends Component {
 	}
 	
 /**
- * Set env
- * 
- * @param string $env
- * @return void
- */	
-	public function setEnv($env) {
-		$this->env = $env;
-	}
-	
-/**
- * Get env
- * 
- * @return $env
- */	
-	public function getEnv() {
-		return $this->env;
-	}
-	
-/**
- * Set path
- * 
- * @param string $path
- * @return void
- */	
-	public function setPath($path) {
-		if (!empty($path)) $this->path = $path;
-	}
-	
-/**
- * Get path
- * 
- * @return $path
- */	
-	public function getPath() {
-		return $this->path;
-	}
-
-/**
  * Upload file
  * 
  * @param string $file - file with absolute path. E.g., /your_path/your_image.png
@@ -113,11 +71,11 @@ class CloudinaryComponent extends Component {
  */
 	public function upload($file = null, $options = array()) {
 		if (!empty($file)) {
-			if (file_exists($this->path . DS . $file)) {
-				$status = \Cloudinary\Uploader::upload($this->path . DS . $file, $options);
+			if (file_exists($file['tmp_name'])) {
+				$status = $this->Uploader->upload($file['tmp_name'], $options);
 				return $this->_extractUploadStatus($status);
 			} else {
-				throw new CakeException(__d('cake_dev', $this->path . DS . $file . ' is missing'));
+				throw new CakeException(__d('cake_dev', $file['tmp_name'] . ' is missing'));
 			}
 		} else {
 			throw new CakeException(__d('cake_dev', $file . ' is missing'));
@@ -133,7 +91,7 @@ class CloudinaryComponent extends Component {
  */
 	public function delete($publicId = null, $options = array()) {
 		if (!empty($publicId)) {
-			$status = \Cloudinary\Uploader::destroy($publicId, $options);
+			$status = $this->Uploader->destroy($publicId, $options);
 			if ($status['result'] == 'ok') {
 				return true;
 			} else {
