@@ -51,15 +51,6 @@ class CloudinaryComponent extends Component {
 		} else { 
 			putenv($this->env);
 		}
-		
-		if (empty($this->path)) {
-			throw new CakeException(__d('cake_dev', 'Cloudinary.path is missing. Please set Cloudinary.path in app/Config/bootstrap.php'));
-		} else {
-			if (!file_exists($this->path)) {
-				App::uses('Folder', 'Utility');
-				$dir = new Folder($this->path, true, 0777);
-			}
-		}
 	}
 	
 /**
