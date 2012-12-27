@@ -8,7 +8,7 @@
  *
  * To use in your view, load an image like you would with the HtmlHelper:
  * <?php echo $this->Cloudinary->image('sample.jpg', array('height' => '70', 'width' => '90', 'crop' => 'scale')); ?>
- * Just be sure to load the Cloudinary Plugin first and set your environemnt variable in Bootstrap.php
+ * Just be sure to load the Cloudinary Plugin first and set your environment variable in Bootstrap.php
  *
  *
  */
