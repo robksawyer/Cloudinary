@@ -39,7 +39,9 @@ class CloudinaryHelper extends HtmlHelper {
 	public function __construct(View $View, $options = array()) {
 		parent::__construct($View, $options);
 		$this->env = Configure::read('Cloudinary.env');
-		putenv($this->env);
+		if ($this->env !== false) {
+			putenv($this->env);
+		}
 		$this->Cloudinary = new Cloudinary($this);
 	}
 
