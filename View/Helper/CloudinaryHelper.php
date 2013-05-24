@@ -54,9 +54,8 @@ class CloudinaryHelper extends HtmlHelper {
 	 * @return string
 	 */
 	public function image($filename, $options = array()) {
-		$extra = $this->cl_image_tag($filename, $options);
 
-		$path = $this->url;
+		// $path = $this->url;
 
 		if (!isset($options['alt'])) {
 			$options['alt'] = '';
@@ -66,12 +65,16 @@ class CloudinaryHelper extends HtmlHelper {
 		if (!empty($options['url'])) {
 			$url = $options['url'];
 			unset($options['url']);
+			// convert cake routing array to string href
+			$u = $this->url($url);
 		}
+		// TODO: fix coupling here - $this->url is defined in cl_image_tag
+		$extra = $this->cl_image_tag($filename, $options);
 
-		$image = sprintf($this->_tags['image'], $path, $this->_parseAttributes($options, null, '', ' '));
+		$image = sprintf($this->_tags['image'], $this->url, $this->_parseAttributes($options, null, '', ' '));
 
 		if ($url) {
-			return sprintf($this->_tags['link'], $this->url($url), null, $image);
+			return sprintf($this->_tags['link'], $u, null, $image);
 		}
 
 		return $image;
