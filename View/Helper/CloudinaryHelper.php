@@ -80,6 +80,53 @@ class CloudinaryHelper extends HtmlHelper {
 		return $image;
 	}
 
+
+	/**
+	 * Use Cloudinary to build a lazy loading image tag.
+	 * Load a dummy gif file for lazy loading, and use 
+	 * the data-src attribute for loading actual image
+	 *
+	 * @param string filename of the cloudinary asset
+	 * @param array options array same as image() options array plus one elements: lazy-filename for the gif loader
+	 * @return string - img tag with lazy loading gif in src and real image in data-src
+	 * @author dan@ufn.com
+	 * 
+	 * @todo refactor to handle image dimensions better - allow separate img h and w for spinner and main image
+	 * @todo get just the src tag from Cloudinary (image() method uses string replace to build tag as last step)
+	 * 
+	 **/
+	public function lazy($filename, $options = array())
+	{
+		// get the real image src using normal cloudinary
+		$product_image_tag = $this->image($filename, $options);
+
+		// extract the src attribute
+		// load the dummy img tag using cloudinary
+		// and combine them into the lazy-loader by 
+		// setting the data-src to the previous (extracted) Cloudinary img src
+		$options['data-src'] = $this->get_src($product_image_tag);
+		// TODO: make it so it is not a forced height and wdith
+		$image_tag = $this->image($options['lazy-filename'], $options);
+		return $image_tag;
+	}
+
+
+	/**
+	 * return just the src attribute from an img tag
+	 * 
+	 * @param string an img tag with an src attribute in standard format
+	 * @return string
+	 * @author dan@ufn.com
+	 *
+	 **/
+	protected function get_src($img_tag)
+	{
+		// match (case-insensitive) src= string followed by single or double quote, 
+		// then capture anything that is not a single or double quote
+		preg_match('/src=["\']([^"\']+)/i', $img_tag, $matches);
+		return $matches[1];
+	}
+
 	/**
 	 * Determine if a secure Cloudinary URL is needed based.
 	 * @param string $source
