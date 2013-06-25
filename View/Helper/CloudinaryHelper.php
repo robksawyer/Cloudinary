@@ -105,8 +105,7 @@ class CloudinaryHelper extends HtmlHelper {
 		// and combine them into the lazy-loader by 
 		// setting the data-src to the previous (extracted) Cloudinary img src
 		$options['data-src'] = $this->get_src($product_image_tag);
-		// TODO: make it so it is not a forced height and wdith
-		$image_tag = $this->image($options['lazy-filename'], $options);
+		$image_tag = $this->image($options['data-lazy-filename'], $options);
 		return $image_tag;
 	}
 
