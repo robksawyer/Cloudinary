@@ -104,11 +104,29 @@ class CloudinaryHelper extends HtmlHelper {
 		// load the dummy img tag using cloudinary
 		// and combine them into the lazy-loader by 
 		// setting the data-src to the previous (extracted) Cloudinary img src
-		$options['data-src'] = $this->get_src($product_image_tag);
+		$options['data-src'] = $this->_get_src($product_image_tag);
 		// TODO: make it so it is not a forced height and wdith
 		$image_tag = $this->image($options['data-lazy-filename'], $options);
 		return $image_tag;
 	}
+
+	/**
+	 * Use Cloudinary to build an image tag then get just the src
+	 *
+	 * @param string filename of the cloudinary asset
+	 * @param array options array same as image() options array
+	 * @return string - img src attribute
+	 * @author dan@ufn.com
+	 * 
+	 **/
+	public function image_src($filename, $options = array())
+	{
+		// get the real image src using normal cloudinary
+		$product_image_tag = $this->image($filename, $options);
+		// extract the src attribute
+		return $this->_get_src($product_image_tag);
+	}
+
 
 
 	/**
@@ -119,7 +137,7 @@ class CloudinaryHelper extends HtmlHelper {
 	 * @author dan@ufn.com
 	 *
 	 **/
-	protected function get_src($img_tag)
+	protected function _get_src($img_tag)
 	{
 		// match (case-insensitive) src= string followed by single or double quote, 
 		// then capture anything that is not a single or double quote
