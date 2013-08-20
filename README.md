@@ -25,7 +25,12 @@ This is easy if you just add it to your composer.json and run `composer.phar upd
 				)
 			);
 
-3. Done!
+3. Load the plugin via app/Config/bootstrap.php
+```
+CakePlugin::load(array('Cloudinary');
+```
+
+4. Done!
 
 # Usage
 
@@ -35,7 +40,7 @@ Call the component in controller
 				public $name = 'Example';
 
 				public $components = array(
-					'CloudinaryComponent'
+					'Cloudinary.CloudinaryComponent'
 				);
 
 				public function index() {

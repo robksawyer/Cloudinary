@@ -18,21 +18,21 @@ App::import('Vendor', 'Cloudinary.Cloudinary', array('file' => 'cloudinary_php/s
 
 class CloudinaryHelper extends HtmlHelper {
 
-	/**
-	 * Store the Cloudinary URL
-	 * @var string
-	 */
+/**
+ * Store the Cloudinary URL
+ * @var string
+ */
 	public $url = null;
 
-	/**
-	 * Cloudinary Class
-	 */
+/**
+ * Cloudinary Class
+ */
 	public $Cloudinary;
 
-	/**
-	 * Cloudinary Environment variable
-	 * @var string
-	 */
+/**
+ * Cloudinary Environment variable
+ * @var string
+ */
 	public $env = null;
 
 
@@ -45,14 +45,14 @@ class CloudinaryHelper extends HtmlHelper {
 		$this->Cloudinary = new Cloudinary($this);
 	}
 
-	/**
-	 * Overwriting the html helper image function since we are loading images
-	 * with the full URL instead of locally stored images
-	 * @see HtmlHelper::image
-	 * @param string $filename
-	 * @param array $options
-	 * @return string
-	 */
+/**
+ * Overwriting the html helper image function since we are loading images
+ * with the full URL instead of locally stored images
+ * @see HtmlHelper::image
+ * @param string $filename
+ * @param array $options
+ * @return string
+ */
 	public function image($filename, $options = array()) {
 
 		// $path = $this->url;
@@ -81,20 +81,20 @@ class CloudinaryHelper extends HtmlHelper {
 	}
 
 
-	/**
-	 * Use Cloudinary to build a lazy loading image tag.
-	 * Load a dummy gif file for lazy loading, and use 
-	 * the data-src attribute for loading actual image
-	 *
-	 * @param string filename of the cloudinary asset
-	 * @param array options array same as image() options array plus one elements: lazy-filename for the gif loader
-	 * @return string - img tag with lazy loading gif in src and real image in data-src
-	 * @author dan@ufn.com
-	 * 
-	 * @todo refactor to handle image dimensions better - allow separate img h and w for spinner and main image
-	 * @todo get just the src tag from Cloudinary (image() method uses string replace to build tag as last step)
-	 * 
-	 **/
+/**
+ * Use Cloudinary to build a lazy loading image tag.
+ * Load a dummy gif file for lazy loading, and use 
+ * the data-src attribute for loading actual image
+ *
+ * @param string filename of the cloudinary asset
+ * @param array options array same as image() options array plus one elements: lazy-filename for the gif loader
+ * @return string - img tag with lazy loading gif in src and real image in data-src
+ * @author dan@ufn.com
+ * 
+ * @todo refactor to handle image dimensions better - allow separate img h and w for spinner and main image
+ * @todo get just the src tag from Cloudinary (image() method uses string replace to build tag as last step)
+ * 
+ **/
 	public function lazy($filename, $options = array())
 	{
 		// get the real image src using normal cloudinary
@@ -110,15 +110,15 @@ class CloudinaryHelper extends HtmlHelper {
 		return $image_tag;
 	}
 
-	/**
-	 * Use Cloudinary to build an image tag then get just the src
-	 *
-	 * @param string filename of the cloudinary asset
-	 * @param array options array same as image() options array
-	 * @return string - img src attribute
-	 * @author dan@ufn.com
-	 * 
-	 **/
+/**
+ * Use Cloudinary to build an image tag then get just the src
+ *
+ * @param string filename of the cloudinary asset
+ * @param array options array same as image() options array
+ * @return string - img src attribute
+ * @author dan@ufn.com
+ * 
+ **/
 	public function image_src($filename, $options = array())
 	{
 		// get the real image src using normal cloudinary
@@ -129,14 +129,14 @@ class CloudinaryHelper extends HtmlHelper {
 
 
 
-	/**
-	 * return just the src attribute from an img tag
-	 * 
-	 * @param string an img tag with an src attribute in standard format
-	 * @return string
-	 * @author dan@ufn.com
-	 *
-	 **/
+/**
+ * return just the src attribute from an img tag
+ * 
+ * @param string an img tag with an src attribute in standard format
+ * @return string
+ * @author dan@ufn.com
+ *
+ **/
 	protected function _get_src($img_tag)
 	{
 		// match (case-insensitive) src= string followed by single or double quote, 
@@ -145,24 +145,24 @@ class CloudinaryHelper extends HtmlHelper {
 		return $matches[1];
 	}
 
-	/**
-	 * Determine if a secure Cloudinary URL is needed based.
-	 * @param string $source
-	 * @param array $options
-	 * @return string
-	 */
+/**
+ * Determine if a secure Cloudinary URL is needed based.
+ * @param string $source
+ * @param array $options
+ * @return string
+ */
 	private function cloudinary_url_internal($source, &$options = array()) {
 		if (!isset($options["secure"])) $options["secure"] = ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' );
 
 		return $this->Cloudinary->cloudinary_url($source, $options);
 	}
 
-	/**
-	 * Transform the image
-	 * @param string $source
-	 * @param array $options
-	 * @return string
-	 */
+/**
+ * Transform the image
+ * @param string $source
+ * @param array $options
+ * @return string
+ */
 	private function cl_image_tag($source, $options = array()) {
 		$this->url = $this->cloudinary_url_internal($source, $options);
     	if (isset($options["html_width"])) $options["width"] = $this->Cloudinary->option_consume($options, "html_width");

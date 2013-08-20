@@ -18,18 +18,18 @@ class CloudinaryBehavior extends ModelBehavior {
  * @param array $settings
  */
 	public function setup(Model $Model, $settings = array()) {
-    App::uses('CakeCloudinary', 'Cloudinary.Lib');
+  		App::uses('CakeCloudinary', 'Cloudinary.Lib');
 		$this->CakeCloudinary = new CakeCloudinary();
 		$this->Model->CakeCloudinary = $this->CakeCloudinary->initialize();
 		$this->settings[$Model->alias] = array_merge($this->_defaults, $settings);
 	}
 
-	/**
-	 * Main entry point for models to sync their image
-	 * @param  Model  $Model      [description]
-	 * @param  string $image_path relative path to le image to upload
-	 * @return bool   true/false on success of the image
-	 */
+/**
+ * Main entry point for models to sync their image
+ * @param  Model  $Model      [description]
+ * @param  string $image_path relative path to le image to upload
+ * @return bool   true/false on success of the image
+ */
 	public function syncCloudImage(Model $Model, $image_path) {
 		if (empty($image_path) || !trim($image_path)) {
 			return array('statusCode' => -1);
@@ -52,12 +52,12 @@ class CloudinaryBehavior extends ModelBehavior {
 		return $result;
 	}
 
-  /**
-	 * Build the publicId for this image/model
-	 * 
-	 * @param  Model  $Model
-	 * @return string $publicId
-	 */
+/**
+ * Build the publicId for this image/model
+ * 
+ * @param  Model  $Model
+ * @return string $publicId
+*/
 	private function buildPublicId($Model) {
 		if (is_object($Model)) {
 			return $this->getPublicIdFromModel($Model);
@@ -66,11 +66,11 @@ class CloudinaryBehavior extends ModelBehavior {
 		}
 	}
 
-	/**
-	 * If we get an model object, build public id from it
-	 * @param  [type] $Model [description]
-	 * @return [type]        [description]
-	 */
+/**
+ * If we get an model object, build public id from it
+ * @param  [type] $Model [description]
+ * @return [type]        [description]
+ */
 	private function getPublicIdFromArray($Model) {
 		$settings = $this->settings[$Model['alias']];
 		foreach ($settings['publicPattern'] as $fieldname) {
@@ -83,11 +83,12 @@ class CloudinaryBehavior extends ModelBehavior {
 		$publicId = implode($settings['publicSeparator'], $publicParts);
 		return $publicId;
 	}
-	/**
-	 * If we get an array (like from a result) use that for public id.
-	 * @param  [type] $Model [description]
-	 * @return [type]        [description]
-	 */
+
+/**
+ * If we get an array (like from a result) use that for public id.
+ * @param  [type] $Model [description]
+ * @return [type]        [description]
+ */
 	private function getPublicIdFromModel($Model) {
 		$settings = $this->settings[$Model->alias];
 		foreach ($settings['publicPattern'] as $fieldname) {
@@ -101,10 +102,16 @@ class CloudinaryBehavior extends ModelBehavior {
 		return $publicId;
 	}
 
+/**
+ * 
+ */
 	public function getCloudImage($publicId) {
 		return $this->CakeCloudinary->getResource($publicId);
 	}
 
+/**
+ * 
+ */
 	public function afterSave(Model $Model, $created = null) {
 		foreach ($this->settings as $model_alias => $settings) {
 			if (!empty($Model->data[$model_alias])) {
@@ -116,6 +123,9 @@ class CloudinaryBehavior extends ModelBehavior {
 		}
 	}
 
+/**
+ * 
+ */
 	public function afterFind(Model $Model, $results = array(), $primary = false) {
 
 		if (!empty($results) and is_array($results) and count($results)) {
@@ -159,6 +169,5 @@ class CloudinaryBehavior extends ModelBehavior {
 		}
 		return $results;
 	}
-
 
 }
