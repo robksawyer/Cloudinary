@@ -30,7 +30,9 @@ This is easy if you just add it to your composer.json and run `composer.phar upd
 CakePlugin::load(array('Cloudinary');
 ```
 
-4. Done!
+4. Add either the behavior to your model `$actsAs = array('Cloudinary')` and use the plugin that way, or use the component and by adding it to the `$components` variable in your controller.
+
+5. Done!
 
 # Usage
 
