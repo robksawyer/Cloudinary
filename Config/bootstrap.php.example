@@ -1,0 +1,12 @@
+<?php
+	// Cloudinary.env - sign up and get this from http://cloudinary.com
+	// Cloudinary.path - tmp path for images
+	Configure::write(
+		'Cloudinary', 
+		array(
+			'env' =>  '',
+			'path' => APP . 'webroot' . DS . 'img' . DS . 'photos'
+		)
+	);
+
+?>
