@@ -4,10 +4,16 @@ A Cakephp component for Cloudinary cloud image service.
 
 # Installation
 1. Download and extract Cloudinary PHP library from https://github.com/cloudinary/cloudinary_php to app/Vendor/Cloudinary
+This is easy if you just add it to your composer.json and run `composer.phar update`
+```
+{
+  "require": {
+    "cloudinary/cloudinary_php": "dev-master"
+  }
+}
+```
 
-2. Download from https://github.com/ryanicle/cakephp-cloudinary-component
-
-3. Set variables in app/Config/bootstrap.php
+2. Rename the file app/Config/bootstrap.php.example to bootstrap.php and update the variables. You should be able to find these after you sign up with Cloudinary.
 
 			// Cloudinary.env - sign up and get this from http://cloudinary.com
 			// Cloudinary.path - tmp path for images
@@ -19,9 +25,7 @@ A Cakephp component for Cloudinary cloud image service.
 				)
 			);
 
-4. Place CloudinaryComponent.php in app/Controller/Component/
-
-5. Done!
+3. Done!
 
 # Usage
 
